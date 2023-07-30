@@ -17,8 +17,25 @@ const start = async () => {
 }
 
 start()
-// returns "[1, 2, 3]"
+//  {
+//    output: "[1, 2, 3]",
+//    error: null
+// }
+```
 
+Install python packages
+
+```js
+await python.installPackages("pandas")
+python.runPython(`
+import pandas as pd
+
+pd.DataFrame({"a": [1, 2, 3]})
+`)
+// {
+//    output: '   a\n0  1\n1  2\n2  3',
+//    error: null}
+// }
 ```
 
 ## React
