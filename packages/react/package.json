@@ -1,0 +1,42 @@
+{
+    "name": "@webpy/react",
+    "version": "0.0.1",
+    "description": "Run Python in React",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "pub": "pnpm build & pnpm publish --no-git-checks --access public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/qiushiyan/webpy.git"
+    },
+    "keywords": [
+        "react",
+        "python",
+        "pyodide"
+    ],
+    "author": "Qiushi Yan",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/qiushiyan/webpy/issues"
+    },
+    "homepage": "https://github.com/qiushiyan/webpy#readme",
+    "devDependencies": {
+        "@types/react": "^18.0.32",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "typescript": "^5.0.3"
+    },
+    "peerDependencies": {
+        "react": "^16.9.0 || ^17.0.0 || ^18.0.0",
+        "react-dom": "^16.9.0 || ^17.0.0 || ^18.0.0"
+    },
+    "dependencies": {
+        "webpy": "workspace:^"
+    }
+}

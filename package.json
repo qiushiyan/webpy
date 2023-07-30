@@ -1,0 +1,10 @@
+{
+    "name": "webpy-monorepo",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "turbo run build"
+    },
+    "devDependencies": {
+        "turbo": "^1.10.12"
+    }
+}
