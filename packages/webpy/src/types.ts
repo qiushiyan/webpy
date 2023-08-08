@@ -1,4 +1,4 @@
-import type { loadPyodide, PyodideInterface } from "pyodide";
+import type { loadPyodide, PyodideInterface, PyProxy } from "pyodide";
 
 export interface Micropip {
 	install: (packages: string[]) => Promise<void>;
@@ -6,14 +6,19 @@ export interface Micropip {
 
 type loadPyodideOptions = Parameters<typeof loadPyodide>[0];
 
-export type RunPythonOptions = Parameters<PyodideInterface["runPythonAsync"]>[1] & {
-	serializer: (val: any) => any
-	shortenError: boolean;
-}
+export type PyodideResult = number | string | undefined | PyProxy;
+
+type PyodideRunPythonOptions = Parameters<
+	PyodideInterface["runPythonAsync"]
+>[1];
+
+export type RunPythonOptions = PyodideRunPythonOptions & {
+	shortenError?: boolean;
+};
 
 type ExtraInitArgs = {
 	packages?: string[];
 	patchHttp?: boolean;
-}
+};
 
 export type InitializePythonOptions = ExtraInitArgs & loadPyodideOptions;

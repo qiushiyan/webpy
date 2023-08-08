@@ -19,11 +19,12 @@ const start = async () => {
 start()
 //  {
 //    output: "[1, 2, 3]",
+// .  type: "list",
 //    error: null
 // }
 ```
 
-Install python packages
+### Install python packages
 
 ```js
 await python.installPackages("pandas")
@@ -49,6 +50,7 @@ export function() {
     const {
         runPython,
         installPackage,
+        isRunning,
         isLoading,
         isInstalling
     } = usePython()

@@ -53,9 +53,6 @@ importers:
 
   packages/react:
     dependencies:
-      comlink:
-        specifier: ^4.4.1
-        version: 4.4.1
       webpy:
         specifier: workspace:^
         version: link:../webpy
