@@ -35,7 +35,8 @@ pd.DataFrame({"a": [1, 2, 3]})
 `)
 // {
 //    output: '   a\n0  1\n1  2\n2  3',
-//    error: null}
+//    type: "pd.DataFrame",
+//    error: null
 // }
 ```
 
