@@ -1,7 +1,7 @@
 "use client";
 
-import { usePython } from "@webpy/react";
-import { FormEvent, useEffect, useState } from "react";
+import { PythonContext, usePython } from "@webpy/react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 
 export default function Home() {
 	const {
@@ -10,17 +10,13 @@ export default function Home() {
 		installPackages,
 		interruptExecution,
 		isRunning,
-	} = usePython();
+	} = useContext(PythonContext);
 	const [result, setResult] = useState<string | null>("");
 	const [input, setInput] = useState("");
 	const handleRun = async () => {
 		const res = await runPython(input);
 		setResult(res.error ? res.error : res.output);
 	};
-
-	if (isLoading) {
-		return "is loading";
-	}
 
 	return (
 		<main>
