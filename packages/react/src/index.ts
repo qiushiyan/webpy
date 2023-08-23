@@ -7,6 +7,7 @@ import {
 	InitializePythonOptions,
 	RunPythonOptions,
 } from "webpy";
+import { proxy } from "comlink";
 
 export const usePython = (options?: InitializePythonOptions) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -15,10 +16,15 @@ export const usePython = (options?: InitializePythonOptions) => {
 	const pythonRef = useRef<PythonWorker>();
 
 	const createPython = async () => {
-		setIsLoading(true);
-		const worker = await initializePython(options);
-		pythonRef.current = worker;
-		setIsLoading(false);
+		if (!pythonRef.current) {
+			setIsLoading(true);
+			const worker = await initializePython({
+				...options,
+				stdout: options?.stdout ? proxy(options.stdout) : undefined,
+			});
+			pythonRef.current = worker;
+			setIsLoading(false);
+		}
 	};
 
 	const getPython = () => {
@@ -56,11 +62,19 @@ export const usePython = (options?: InitializePythonOptions) => {
 	}, []);
 
 	const getBanner = useCallback(async () => {
-		const python = getPython();
-		setIsRunning(true);
-		const result = await python.getBanner();
-		setIsRunning(false);
-		return result;
+		if (pythonRef.current) {
+			setIsRunning(true);
+			const result = await pythonRef.current.getBanner();
+			setIsRunning(false);
+			return result;
+		}
+	}, []);
+
+	const interruptExecution = useCallback(async () => {
+		if (pythonRef.current) {
+			await pythonRef.current.interruptExecution();
+			setIsRunning(false);
+		}
 	}, []);
 
 	return {
@@ -70,5 +84,6 @@ export const usePython = (options?: InitializePythonOptions) => {
 		runPython,
 		installPackages,
 		getBanner,
+		interruptExecution,
 	};
 };

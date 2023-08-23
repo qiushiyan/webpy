@@ -4,12 +4,18 @@ import { usePython } from "@webpy/react";
 import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
-	const { isLoading, runPython, installPackages } = usePython();
+	const {
+		isLoading,
+		runPython,
+		installPackages,
+		interruptExecution,
+		isRunning,
+	} = usePython();
+	const [result, setResult] = useState<string | null>("");
 	const [input, setInput] = useState("");
-	const handleSubmit = async (event: FormEvent) => {
-		event.preventDefault();
+	const handleRun = async () => {
 		const res = await runPython(input);
-		console.log(res);
+		setResult(res.error ? res.error : res.output);
 	};
 
 	if (isLoading) {
@@ -19,7 +25,7 @@ export default function Home() {
 	return (
 		<main>
 			<pre>
-				<form onSubmit={handleSubmit}>
+				<form>
 					<textarea
 						cols={30}
 						rows={10}
@@ -29,9 +35,28 @@ export default function Home() {
 							color: "black",
 						}}
 					/>
-					<button type="submit">run</button>
+					<button
+						type="button"
+						onClick={(e) => {
+							e.preventDefault();
+							handleRun();
+						}}
+					>
+						run
+					</button>
+					<button
+						type="button"
+						onClick={(e) => {
+							e.preventDefault();
+							interruptExecution();
+						}}
+					>
+						cancel
+					</button>
+					<p>{isRunning ? "running" : "not running"}</p>
 				</form>
 			</pre>
+			<pre>{result}</pre>
 		</main>
 	);
 }

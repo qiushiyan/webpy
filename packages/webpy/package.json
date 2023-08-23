@@ -1,6 +1,6 @@
 {
   "name": "webpy",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "description": "Run Python in the Browser",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",

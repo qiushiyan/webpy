@@ -1,6 +1,6 @@
 {
     "name": "@webpy/react",
-    "version": "0.0.8",
+    "version": "0.0.13",
     "description": "Run Python in React",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -37,6 +37,7 @@
         "react-dom": "^16.9.0 || ^17.0.0 || ^18.0.0"
     },
     "dependencies": {
+        "comlink": "^4.4.1",
         "webpy": "workspace:^"
     }
 }

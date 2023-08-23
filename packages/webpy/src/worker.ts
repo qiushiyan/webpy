@@ -12,6 +12,7 @@ declare global {
 	interface Window {
 		loadPyodide: typeof loadPyodide;
 		pyodide: PyodideInterface;
+		interruptBuffer: Uint8Array;
 	}
 }
 
@@ -43,9 +44,10 @@ const python = {
 	init: async ({
 		packages,
 		patchHttp = true,
+		stdout,
 		...pyodideOptions
 	}: InitializePythonOptions) => {
-		self.pyodide = await self.loadPyodide(pyodideOptions);
+		self.pyodide = await self.loadPyodide({ stdout, ...pyodideOptions });
 
 		// pre-load packages
 		await self.pyodide.loadPackage("micropip");
@@ -60,6 +62,9 @@ const python = {
 			const pyodide_http = self.pyodide.pyimport("pyodide_http");
 			pyodide_http.patch_all();
 		}
+
+		self.interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
+		self.pyodide.setInterruptBuffer(self.interruptBuffer);
 	},
 	getBanner: async () => {
 		const namespace = self.pyodide.globals.get("dict")();
@@ -73,6 +78,7 @@ const python = {
 		code: string,
 		{ shortenError, ...rest }: RunPythonOptions = {},
 	) => {
+		self.interruptBuffer[0] = 0;
 		try {
 			const result: PyodideResult = await self.pyodide.runPythonAsync(
 				code,
@@ -92,6 +98,10 @@ const python = {
 					: String(err),
 			};
 		}
+	},
+
+	interruptExecution: async () => {
+		self.interruptBuffer[0] = 2;
 	},
 
 	installPackage: async (packages: string | string[]) => {
