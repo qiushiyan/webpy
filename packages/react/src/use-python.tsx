@@ -10,6 +10,7 @@ import {
 import { proxy } from "comlink";
 
 export const usePython = (options?: InitializePythonOptions) => {
+	const [isReady, setIsReady] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isInstalling, setIsInstalling] = useState(false);
@@ -23,6 +24,7 @@ export const usePython = (options?: InitializePythonOptions) => {
 				stdout: options?.stdout ? proxy(options.stdout) : undefined,
 			});
 			pythonRef.current = worker;
+			setIsReady(true);
 			setIsLoading(false);
 		}
 	};
@@ -78,6 +80,7 @@ export const usePython = (options?: InitializePythonOptions) => {
 	}, []);
 
 	return {
+		isReady,
 		isLoading,
 		isInstalling,
 		isRunning,

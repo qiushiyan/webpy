@@ -15,6 +15,7 @@ type PythonProviderProps = {
 };
 
 type PythonContextValue = {
+	isReady: boolean;
 	isLoading: boolean;
 	isInstalling: boolean;
 	isRunning: boolean;
@@ -41,6 +42,7 @@ type PythonContextValue = {
 export const PythonContext = createContext({} as PythonContextValue);
 
 export const PythonProvider = ({ children, options }: PythonProviderProps) => {
+	const [isReady, setIsReady] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isInstalling, setIsInstalling] = useState(false);
@@ -55,6 +57,7 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 				stdout: options?.stdout ? proxy(options.stdout) : undefined,
 			});
 			pythonRef.current = worker;
+			setIsReady(true);
 			setIsLoading(false);
 		}
 	};
@@ -112,6 +115,7 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 	return (
 		<PythonContext.Provider
 			value={{
+				isReady,
 				isLoading,
 				isInstalling,
 				isRunning,
