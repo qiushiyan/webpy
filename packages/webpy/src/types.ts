@@ -19,6 +19,7 @@ export type RunPythonOptions = PyodideRunPythonOptions & {
 type ExtraInitArgs = {
 	packages?: string[];
 	patchHttp?: boolean;
+	setUpCode?: string;
 };
 
 export type InitializePythonOptions = ExtraInitArgs & loadPyodideOptions;

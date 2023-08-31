@@ -20,31 +20,12 @@ const initConsoleCode = `
 from pyodide.console import PyodideConsole, repr_shorten, BANNER
 `;
 
-// const setUpCode = `
-// import js
-// class Placeholder:
-//     def __init__(self, *args, **kwargs) -> None:
-//         return
-//     def __getattr__(self, __name: str):
-//         return Placeholder
-// js.document = Placeholder()
-// def show_matplotlib(plt):
-//     import base64
-//     import io
-
-//     buf = io.BytesIO()
-//     plt.savefig(buf, format="png")
-//     buf.seek(0)
-//     img_str = "data:image/png;base64," + base64.b64encode(buf.read()).decode("UTF-8")
-//     buf.close()
-//     return img_str
-// `;
-
 const python = {
 	init: async ({
 		packages,
 		patchHttp = true,
 		stdout,
+		setUpCode,
 		...pyodideOptions
 	}: InitializePythonOptions) => {
 		self.pyodide = await self.loadPyodide({ stdout, ...pyodideOptions });
@@ -65,6 +46,9 @@ const python = {
 
 		self.interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
 		self.pyodide.setInterruptBuffer(self.interruptBuffer);
+		if (setUpCode) {
+			self.pyodide.runPython(setUpCode);
+		}
 	},
 	getBanner: async () => {
 		const namespace = self.pyodide.globals.get("dict")();
