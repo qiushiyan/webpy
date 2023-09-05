@@ -14,6 +14,7 @@ export const usePython = (options?: InitializePythonOptions) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isInstalling, setIsInstalling] = useState(false);
+	const hasInterruptBuffer = useRef(false);
 	const pythonRef = useRef<PythonWorker>();
 
 	const createPython = async () => {
@@ -68,8 +69,18 @@ export const usePython = (options?: InitializePythonOptions) => {
 		}
 	}, []);
 
+	const setInterruptBuffer = useCallback(async () => {
+		if (pythonRef.current) {
+			await pythonRef.current.setInterruptBuffer();
+		}
+	}, []);
+
 	const interruptExecution = useCallback(async () => {
 		if (pythonRef.current) {
+			if (!hasInterruptBuffer.current) {
+				await pythonRef.current.setInterruptBuffer();
+				hasInterruptBuffer.current = true;
+			}
 			await pythonRef.current.interruptExecution();
 			setIsRunning(false);
 		}
@@ -88,5 +99,6 @@ export const usePython = (options?: InitializePythonOptions) => {
 		installPackages,
 		getBanner,
 		interruptExecution,
+		setInterruptBuffer,
 	};
 };

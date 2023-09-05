@@ -12,7 +12,7 @@ declare global {
 	interface Window {
 		loadPyodide: typeof loadPyodide;
 		pyodide: PyodideInterface;
-		interruptBuffer: Uint8Array;
+		interruptBuffer: Uint8Array | undefined;
 	}
 }
 
@@ -43,12 +43,14 @@ const python = {
 			const pyodide_http = self.pyodide.pyimport("pyodide_http");
 			pyodide_http.patch_all();
 		}
-
-		self.interruptBuffer = new Uint8Array(new SharedArrayBuffer(1));
-		self.pyodide.setInterruptBuffer(self.interruptBuffer);
 		if (setUpCode) {
 			self.pyodide.runPython(setUpCode);
 		}
+	},
+	setInterruptBuffer: () => {
+		const buffer = new Uint8Array(new SharedArrayBuffer(1));
+		self.interruptBuffer = buffer;
+		self.pyodide.setInterruptBuffer(buffer);
 	},
 	getBanner: async () => {
 		const namespace = self.pyodide.globals.get("dict")();
@@ -62,7 +64,9 @@ const python = {
 		code: string,
 		{ shortenError, ...rest }: RunPythonOptions = {},
 	) => {
-		self.interruptBuffer[0] = 0;
+		if (self.interruptBuffer) {
+			self.interruptBuffer[0] = 0;
+		}
 		try {
 			const result: PyodideResult = await self.pyodide.runPythonAsync(
 				code,
@@ -85,7 +89,9 @@ const python = {
 	},
 
 	interruptExecution: async () => {
-		self.interruptBuffer[0] = 2;
+		if (self.interruptBuffer) {
+			self.interruptBuffer[0] = 2;
+		}
 	},
 
 	installPackage: async (packages: string | string[]) => {

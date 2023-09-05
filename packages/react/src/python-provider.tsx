@@ -36,6 +36,7 @@ type PythonContextValue = {
 	>;
 	installPackages: (packages: string | string[]) => Promise<void>;
 	getBanner: () => Promise<string | undefined>;
+	setInterruptBuffer: () => Promise<void>;
 	interruptExecution: () => Promise<void>;
 };
 
@@ -46,6 +47,7 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isInstalling, setIsInstalling] = useState(false);
+	const hasInterruptBuffer = useRef(false);
 
 	const pythonRef = useRef<PythonWorker>();
 
@@ -103,8 +105,18 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 
 	const interruptExecution = useCallback(async () => {
 		if (pythonRef.current) {
+			if (!hasInterruptBuffer.current) {
+				await pythonRef.current.setInterruptBuffer();
+				hasInterruptBuffer.current = true;
+			}
 			await pythonRef.current.interruptExecution();
 			setIsRunning(false);
+		}
+	}, []);
+
+	const setInterruptBuffer = useCallback(async () => {
+		if (pythonRef.current) {
+			await pythonRef.current.setInterruptBuffer();
 		}
 	}, []);
 
@@ -120,6 +132,7 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 				isInstalling,
 				isRunning,
 				runPython,
+				setInterruptBuffer,
 				installPackages,
 				getBanner,
 				interruptExecution,
