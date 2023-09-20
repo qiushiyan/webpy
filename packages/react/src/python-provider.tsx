@@ -15,6 +15,7 @@ type PythonProviderProps = {
 };
 
 type PythonContextValue = {
+	isError: boolean;
 	isReady: boolean;
 	isLoading: boolean;
 	isInstalling: boolean;
@@ -43,6 +44,7 @@ type PythonContextValue = {
 export const PythonContext = createContext({} as PythonContextValue);
 
 export const PythonProvider = ({ children, options }: PythonProviderProps) => {
+	const [isError, setIsError] = useState(false);
 	const [isReady, setIsReady] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
@@ -54,12 +56,18 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 	const createPython = async () => {
 		if (!isLoading && !pythonRef.current) {
 			setIsLoading(true);
-			const worker = await initializePython({
-				...options,
-				stdout: options?.stdout ? proxy(options.stdout) : undefined,
-			});
-			pythonRef.current = worker;
-			setIsReady(true);
+			try {
+				const worker = await initializePython({
+					...options,
+					stdout: options?.stdout ? proxy(options.stdout) : undefined,
+				});
+				pythonRef.current = worker;
+				setIsReady(true);
+			} catch (err) {
+				console.error("webpy initialize error", err);
+				setIsError(true);
+				setIsReady(false);
+			}
 			setIsLoading(false);
 		}
 	};
@@ -127,6 +135,7 @@ export const PythonProvider = ({ children, options }: PythonProviderProps) => {
 	return (
 		<PythonContext.Provider
 			value={{
+				isError,
 				isReady,
 				isLoading,
 				isInstalling,

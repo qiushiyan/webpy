@@ -1,6 +1,6 @@
 {
     "name": "@webpy/react",
-    "version": "0.0.19",
+    "version": "0.0.22",
     "description": "Run Python in React",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",

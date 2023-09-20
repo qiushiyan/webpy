@@ -10,6 +10,7 @@ import {
 import { proxy } from "comlink";
 
 export const usePython = (options?: InitializePythonOptions) => {
+	const [isError, setIsError] = useState(false);
 	const [isReady, setIsReady] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
@@ -20,12 +21,19 @@ export const usePython = (options?: InitializePythonOptions) => {
 	const createPython = async () => {
 		if (!isLoading && !pythonRef.current) {
 			setIsLoading(true);
-			const worker = await initializePython({
-				...options,
-				stdout: options?.stdout ? proxy(options.stdout) : undefined,
-			});
-			pythonRef.current = worker;
-			setIsReady(true);
+			try {
+				const worker = await initializePython({
+					...options,
+					stdout: options?.stdout ? proxy(options.stdout) : undefined,
+				});
+				pythonRef.current = worker;
+				setIsReady(true);
+			} catch (err) {
+				console.error("webpy initialize error", err);
+				setIsError(true);
+				setIsReady(false);
+			}
+
 			setIsLoading(false);
 		}
 	};
@@ -91,6 +99,7 @@ export const usePython = (options?: InitializePythonOptions) => {
 	}, []);
 
 	return {
+		isError,
 		isReady,
 		isLoading,
 		isInstalling,
